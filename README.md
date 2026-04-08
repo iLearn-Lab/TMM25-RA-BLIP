@@ -31,9 +31,6 @@ Liqiang Nie<sup>1</sup>
 </div>
 </div>
         
-## :new: Updates
-
-
 ## :rocket: Abstract 
 Multimodal Large Language Models (MLLMs) have recently received substantial interest, which shows their emerging potential as general-purpose models for various vision-language tasks. MLLMs involve significant external knowledge within their parameters; however, it is challenging to continually update these models with the latest knowledge, which involves huge computational costs and poor interpretability. Retrieval augmentation techniques have proven to be effective plugins for both LLMs and MLLMs. 
 
