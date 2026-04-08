@@ -2,16 +2,23 @@
 <h2 align="center">
     <b>RA-BLIP: Multimodal Adaptive Retrieval-Augmented Bootstrapping Language-Image Pre-training </b>
 </h2>
+<div align="center">
+
 <div>
-<a target="_blank" href="#">Author&#160;Name 1</a><sup>1</sup>,
-<a target="_blank" href="#">Author&#160;Name 2</a><sup>1</sup>,
-<a target="_blank" href="#">Author&#160;Name 3</a><sup>2&#9993</sup>
+Muhe Ding<sup>1</sup>,
+Yang Ma<sup>2</sup>,
+Pengda Qin<sup>3</sup>,
+Jianlong Wu<sup>1&#9993</sup>,
+Yuhong Li<sup>3</sup>,
+Liqiang Nie<sup>1</sup>
 </div>
-<sup>1</sup>Institution Name 1&#160;&#160;&#160;</span>
-<sup>2</sup>Institution Name 2</span>
-<br />
-<sup>&#9993&#160;</sup>Corresponding author&#160;&#160;</span>
-<br/>
+<br>
+<sup>1</sup>School of Computer Science and Technology, Harbin Institute of Technology, Shenzhen, China<br>
+<sup>2</sup>School of Computer Science, University of Sydney, Sydney, Australia<br>
+<sup>3</sup>Security Department, Alibaba Group, Hangzhou, China<br>
+<br>
+<sup>&#9993</sup>Corresponding authors
+</div>
 <div align="center">
     <a href="https://ieeexplore.ieee.org/iel8/6046/10844992/11125516.pdf" target="_blank">
     <img src="https://img.shields.io/badge/Paper-TMM%202025-blue" alt="IEEE TMM"></a>
@@ -59,3 +66,69 @@ pip install torch torchvision torchaudio --index-url [https://download.pytorch.o
 git clone [https://github.com/YourOrg/RA-BLIP.git](https://github.com/YourOrg/RA-BLIP.git)
 cd RA-BLIP
 pip install -r requirements.txt
+
+
+
+抱歉让您产生了误解！为了方便您**一键复制**，下面为您提供纯正的、可以直接粘贴到 `README.md` 文件中的 Markdown 源码格式：
+
+```markdown
+### Data Preparation
+
+Download the pre-training datasets and downstream Multimodal QA datasets (e.g., OK-VQA, A-OKVQA). Organize them in the `./data` directory as follows:
+
+```text
+RA-BLIP/
+├── data/
+│   ├── pretrain/
+│   ├── okvqa/
+│   └── aokvqa/
+```
+
+### Checkpoints
+
+Download the base MLLM weights and the pre-trained RA-BLIP retrieval/fusion modules from our [Huggingface repository](#) and place them in the `./checkpoints` folder.
+
+---
+
+## 🏃 Training & Evaluation
+
+### Pre-training
+
+To run the Bootstrapping Language-Image Pre-training with retrieval augmentation:
+
+```bash
+python run_pretrain.py \
+    --config ./configs/pretrain.yaml \
+    --output_dir ./output/pretrain
+```
+
+---
+
+## 📊 Main Results
+
+Extensive experiments demonstrate that RA-BLIP achieves state-of-the-art performance on open multimodal question-answering datasets, outperforming existing retrieval-augmented baseline models.
+
+<p align="center">
+  <img src="./assets/webqa.png" width="85%" alt="Main Results of RA-BLIP">
+</p>
+<p align="center">
+  <em>Table 1: Performance comparison of RA-BLIP against state-of-the-art retrieval-augmented models.</em>
+</p>
+
+---
+
+## 🤗 Citation
+
+If you find this work useful for your research, please kindly cite our TMM 2025 paper:
+
+```bibtex
+@article{rablip2025,
+  title={RA-BLIP: Multimodal Adaptive Retrieval-Augmented Bootstrapping Language-Image Pre-training},
+  author={Ding, Muhe and Ma, Yang and Qin, Pengda and Wu, Jianlong and Li, Yuhong and Nie, Liqiang},
+  journal={IEEE Transactions on Multimedia (TMM)},
+  year={2025},
+  url={[https://ieeexplore.ieee.org/document/10844992](https://ieeexplore.ieee.org/document/10844992)}
+}
+
+
+
