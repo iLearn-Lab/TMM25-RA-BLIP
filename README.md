@@ -65,10 +65,6 @@ cd RA-BLIP
 pip install -r requirements.txt
 
 
-
-抱歉让您产生了误解！为了方便您**一键复制**，下面为您提供纯正的、可以直接粘贴到 `README.md` 文件中的 Markdown 源码格式：
-
-```markdown
 ### Data Preparation
 
 Download the pre-training datasets and downstream Multimodal QA datasets (e.g., OK-VQA, A-OKVQA). Organize them in the `./data` directory as follows:
