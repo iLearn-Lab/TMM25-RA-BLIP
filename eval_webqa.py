@@ -94,10 +94,9 @@ def eval(args,model, val_set):
                                             batch_size=args.batch_size,
                                             num_workers=args.num_workers,
                                             drop_last=False)
-    print(len(val_set))
-    print(len(val_dataloader))
+
     generate_results = {}
-    print("generate")
+
     with torch.no_grad():
         for data in tqdm(val_dataloader):
             query_ids = data['query_id']
@@ -105,7 +104,6 @@ def eval(args,model, val_set):
             image_data = data['image'].to(device)
             data['image'] = image_data
             answers = model.generate(data)
-            #print(answers)
             for qid, question, answer in zip(query_ids, questions, answers):
                 generate_results[qid]={'Q':question,'A':answer}
     
@@ -117,11 +115,6 @@ if __name__ == '__main__':
     
     print(args)
     
-    assert args.model_dir is not None , 'args.model_dir is None'
-
-    assert args.model_name is not None , 'args.model_name is None'
-    print(args.model_dir)
-    print(args.model_name)
     seed = args.seed
     random.seed(seed)
     torch.manual_seed(seed)
@@ -131,23 +124,12 @@ if __name__ == '__main__':
     torch.backends.cudnn.benchmark = False
     torch.backends.cudnn.deterministic = False
 
-    #utils.set_logger(os.path.join(args.model_dir, 'test.log'))
     print('Loading the datasets and model...')
 
     model_path=os.path.join(args.model_dir,args.model_name)
     val_set = get_dataset(args)
     model= create_model(model_path)
     start_time = datetime.now()
-    print(f"开始时间: {start_time}")
+
     eval(args,model,val_set)
-    print(f"开始时间: {start_time}")
-    end_time = datetime.now()
-    print(f"结束时间: {end_time}")
-    time_difference = (end_time - start_time).total_seconds()
     
-    print(f"时间差: {time_difference} 秒")
-
-    minutes = time_difference // 60  # 整数分钟
-    seconds = time_difference % 60   # 剩余秒数
-
-    print(f"时间差: {int(minutes)} 分 {seconds:.2f} 秒")

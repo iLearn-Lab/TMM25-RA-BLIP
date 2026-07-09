@@ -126,11 +126,10 @@ def create_model_and_optimizer(model_type,device):
 
     print('======= MODULE PRINT ========')
     for n, c in model.named_children():
-            # print(n)
         print("[children module: {}]".format(n))
         for cn, p in c.named_parameters():
             print("  >>  " + n + '.' + cn, "|", p.size(), "|", p.requires_grad, "|", p.device)
-        # print(user_module)
+
     print('=============================')
 
     num_gpus = torch.cuda.device_count()
@@ -156,9 +155,8 @@ def train(model, optimizer, dataloader, scaler, epoch, cur_step, scheduler,write
     global global_step
     model.train()
     avg_loss = utils.RunningAverage()
-    #with tqdm(total=len(dataloader), disable=True) as t:
+
     with tqdm(total=len(dataloader), disable=False if args.rank == 0 else True) as t:
-    #with tqdm(total=len(dataloader)) as t:
         dataloader.sampler.set_epoch(epoch)
         for step, data in enumerate(dataloader):
             global_step=global_step+1
@@ -181,7 +179,7 @@ def train(model, optimizer, dataloader, scaler, epoch, cur_step, scheduler,write
             scaler.scale(loss).backward()
             scaler.step(optimizer)
             scaler.update()
-            #scheduler.step()
+
 
             if cur_step < args.warm_up_steps:
                 scheduler.step(0, cur_step)
@@ -191,12 +189,11 @@ def train(model, optimizer, dataloader, scaler, epoch, cur_step, scheduler,write
             cur_step += 1
             
             avg_loss.update(loss.item())
-            # #t.set_postfix(loss='{:05.3f}'.format(avg_loss()))
-            # print([global_step, optimizer.param_groups[0]['lr']])
+           
             if args.rank == 0:
                 writer.add_scalar("loss",loss.item(),global_step)
             if args.rank == 0 and global_step % 50 == 0:
-                #print('global_step={}, loss={:05.3f}, lr={:05.10f}'.format(global_step, avg_loss(), optimizer.param_groups[0]['lr'])) 
+
                 logging.info('global_step={}, loss={:05.3f}, lr={:05.10f}'.format(global_step, avg_loss(), optimizer.param_groups[0]['lr']))
             t.set_postfix(step='{}, loss={:05.10f}, lr={:05.10f}'.format(global_step, avg_loss(), optimizer.param_groups[0]['lr']))
             t.update()
@@ -218,15 +215,7 @@ def train_and_eval(args,model, optimizer, trainset,device):
     scaler = GradScaler()
     epoches = args.num_epochs
     
-    if args.rank == 0:    
-        print("len(trainset) ", len(trainset))
 
-        print("args.batch_size: ", args.batch_size)
-
-        print('len(trainloader): ', len(trainloader))
-    
-    
-    
     if args.rank == 0:
         writer=SummaryWriter(os.path.join(args.model_dir,"run"))
     else:
@@ -267,12 +256,8 @@ if __name__ == '__main__':
     init_dis_mode(args)
 
     device = torch.device(args.device)
-    print("device: ", device)
-    print(args)
-    print("args.rank: ",args.rank)
-    print("args.local_rank: ",args.local_rank)
 
-    args.model_dir= args.model_dir +'/'+ "fintune_"+str(args.lr)+"x"+str(args.batch_size)+"_"+datetime.now().strftime("%Y%m%d_%H%M%S")
+    args.model_dir= args.model_dir +'/'+ "finetune_"+str(args.lr)+"x"+str(args.batch_size)+"_"+datetime.now().strftime("%Y%m%d_%H%M%S")
     
     
     if args.rank == 0 and not os.path.exists(args.model_dir):

@@ -568,7 +568,6 @@ class Blip2T5InstructEnhance(Blip2Base):
         
 
         for i, ids in enumerate(retrieval['ids']):
-            #print(ids)
             if str(ids)[0] == "d":
 
                 image1_atts[i, :] = 0
@@ -781,14 +780,10 @@ class Blip2T5InstructEnhance(Blip2Base):
         image2_atts = torch.ones(image2_embeds.size()[:-1], dtype=torch.long).to(image_embeds.device)
 
         for i, ids in enumerate(retrieval['ids']):
-            print(ids)
             if str(ids)[0] == "d":
-                print('img1')
                 image1_atts[i, :] = 0
             
-
             else:
-                print('img2')
                 image2_atts[i, :] = 0
 
 
@@ -884,7 +879,6 @@ class Blip2T5InstructEnhance(Blip2Base):
 
         qformer_text_input = model_cfg.get("qformer_text_input", True)
 
-        print("t5_model: ",t5_model)
 
         model = cls(
             vit_model=vit_model,
