@@ -94,9 +94,7 @@ class WebqaDataset(Dataset):
         if len(image_ids) < k:
             extended_num = k - len(image_ids)
             image_data += [torch.zeros((3, 224, 224))] * extended_num
-        #print(image_data[0].shape) torch.Size([3, 224, 224])
-        #print(len(image_data)) 2
-        #print(torch.stack(image_data).shape) torch.Size([2, 3, 224, 224])
+
         return torch.stack(image_data), image_caption, len(image_ids)    
             
     def get_text(self, text_title, text_fact):

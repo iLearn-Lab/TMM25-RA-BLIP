@@ -63,35 +63,14 @@ def get_dataset(args):
 
 def create_model(model_path):
     
-    #model = torch.load(model_path)
-    #state_dict = model.state_dict()
-    #torch.save(state_dict, os.path.join(args.model_dir,'model_epoch_9.pth'))  # save_file = os.path.join(args.model_dir, 'retrieval_model_epoch_{epoch}.pt'.format(epoch=epoch))
-    
-
     model = instruct_model.Blip2T5InstructEnhance.load_pretrained_model(model_type='flant5xl')
-
-
-    #model = instruct_model.Blip2T5Instruct.load_pretrained_model(model_type='flant5xl')
 
 
     model.load_state_dict(torch.load(model_path))
 
-    #model = torch.load(model_path)
 
     model.to(device)
 
-    # # model = instruct_model.Blip2T5InstructEnhance.load_pretrained_model(model_type='flant5xl')
-
-    # # weights = torch.load(model_path)
-
-    # # weights_dict = OrderedDict()
-    # # for k, v in weights.items():
-    # #     new_k = k.replace('module.', '') if 'module' in k else k
-    # #     weights_dict[new_k] = v
-
-    # # model.load_state_dict(weights_dict)
-
-    # model.to(device)
 
     total_params = sum([param.nelement() for param in model.parameters()])
     print('Total Params: {:.3f}M'.format(total_params / 1000000))
@@ -130,7 +109,7 @@ def eval(args,model, val_set):
             for qid, question, answer in zip(query_ids, questions, answers):
                 generate_results[qid]={'Q':question,'A':answer}
     
-    json.dump(generate_results, open(os.path.join(args.model_dir,'xl_generate_1e_6_9_89_384_beam_3_Ehance.json'), 'w'),indent=4)
+    json.dump(generate_results, open(os.path.join(args.model_dir,'result.json'), 'w'),indent=4)
     
     ### compute test metrics
 

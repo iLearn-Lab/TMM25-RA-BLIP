@@ -132,9 +132,6 @@ class Blip2T5Instruct(Blip2Base):
 
     def forward(self, input_data):
         with self.maybe_autocast():
-            # print("input_data['image']: ",input_data['image'].shape)
-            #print(input_data['image'][:, 0, :].shape)
-            # print(input_data['prompt'])
             image1_embeds = self.ln_vision(self.visual_encoder(input_data['image'][:, 0, :]))
             image2_embeds = self.ln_vision(self.visual_encoder(input_data['image'][:, 1, :]))
         if self.type_embeds is not None:
@@ -145,9 +142,7 @@ class Blip2T5Instruct(Blip2Base):
 
         image1_atts = torch.ones(image1_embeds.size()[:-1], dtype=torch.long).to(image_embeds.device)
         image2_atts = torch.ones(image2_embeds.size()[:-1], dtype=torch.long).to(image_embeds.device)
-        # for i, view_img_num in enumerate(input_data['valid_image_num']):
-        #     if view_img_num == 1:
-        #         image2_atts[i, :] = 0
+
 
         for i, view_img_num in enumerate(input_data['valid_image_num']):
             if view_img_num == 1:
@@ -171,9 +166,7 @@ class Blip2T5Instruct(Blip2Base):
             ).to(image_embeds.device)
             query_atts = torch.ones(query_tokens.size()[:-1], dtype=torch.long).to(image_embeds.device)
             Qformer_atts = torch.cat([query_atts,text_Qformer.attention_mask],dim=1)
-            #print(text_Qformer.input_ids.shape) # 2 114 
-            #print(text_Qformer.attention_mask) #  2 114
-            #print(Qformer_atts.shape) # 2 146     #
+
             query_output = self.Qformer.bert(
                 text_Qformer.input_ids,
                 attention_mask=Qformer_atts,
@@ -256,9 +249,6 @@ class Blip2T5Instruct(Blip2Base):
 
         image1_atts = torch.ones(image1_embeds.size()[:-1], dtype=torch.long).to(image_embeds.device)
         image2_atts = torch.ones(image2_embeds.size()[:-1], dtype=torch.long).to(image_embeds.device)
-        # for i, view_img_num in enumerate(input_data['valid_image_num']):
-        #     if view_img_num == 1:
-        #         image2_atts[i, :] = 0
 
 
         for i, view_img_num in enumerate(input_data['valid_image_num']):
@@ -303,7 +293,6 @@ class Blip2T5Instruct(Blip2Base):
 
         inputs_t5 = self.t5_proj(query_output.last_hidden_state[:,:query_tokens.size(1),:])
         atts_t5 = torch.ones(inputs_t5.size()[:-1], dtype=torch.long).to(image_embeds.device)
-        # 同样的输入再用t5编码，输入到t5-encoder中
         input_tokens = self.t5_tokenizer(
             input_data['prompt'],
             padding="longest",
@@ -472,9 +461,6 @@ class Blip2T5InstructEnhance(Blip2Base):
 
     def forward(self, input_data,retrieval):
         with self.maybe_autocast():
-            # print("input_data['image']: ",input_data['image'].shape)
-            #print(input_data['image'][:, 0, :].shape)
-            # print(input_data['prompt'])
 
             image1_embeds = self.ln_vision(self.visual_encoder(input_data['image'][:, 0, :]))
             image2_embeds = self.ln_vision(self.visual_encoder(input_data['image'][:, 1, :]))
@@ -488,9 +474,6 @@ class Blip2T5InstructEnhance(Blip2Base):
 
         image1_atts = torch.ones(image1_embeds.size()[:-1], dtype=torch.long).to(image_embeds.device)
         image2_atts = torch.ones(image2_embeds.size()[:-1], dtype=torch.long).to(image_embeds.device)
-        # for i, view_img_num in enumerate(input_data['valid_image_num']):
-        #     if view_img_num == 1:
-        #         image2_atts[i, :] = 0
         
         for i, view_img_num in enumerate(input_data['valid_image_num']):
             if view_img_num == 1:
@@ -503,7 +486,7 @@ class Blip2T5InstructEnhance(Blip2Base):
         image_atts = torch.cat([image1_atts, image2_atts], dim=-1)
         
         query_tokens = self.query_tokens.expand(image_embeds.shape[0], -1, -1)
-        ## input_data.text: image_caption(if have) + pos_text + question 
+
         if self.qformer_text_input:
             text_Qformer = self.tokenizer(
                 input_data['prompt'],
@@ -514,9 +497,7 @@ class Blip2T5InstructEnhance(Blip2Base):
             ).to(image_embeds.device)
             query_atts = torch.ones(query_tokens.size()[:-1], dtype=torch.long).to(image_embeds.device)
             Qformer_atts = torch.cat([query_atts,text_Qformer.attention_mask],dim=1)
-            #print(text_Qformer.input_ids.shape) # 2 114 
-            #print(text_Qformer.attention_mask) #  2 114
-            #print(Qformer_atts.shape) # 2 146 
+
             query_output = self.Qformer.bert(
                 text_Qformer.input_ids,
                 attention_mask=Qformer_atts,
@@ -571,12 +552,7 @@ class Blip2T5InstructEnhance(Blip2Base):
             )
             loss1 = outputs.loss
 
-        #print(loss1)
 
-        # 检索方面
-        # print(input_data['query_id'])
-        # print(retrieval['ids'])
-        # print(retrieval['neg_ids'])
         image1_embeds = self.ln_vision(self.visual_encoder(retrieval['image_pos_data']))
         image2_embeds = self.ln_vision(self.visual_encoder(retrieval['image_neg_data']))
         
@@ -590,27 +566,23 @@ class Blip2T5InstructEnhance(Blip2Base):
         image1_atts = torch.ones(image1_embeds.size()[:-1], dtype=torch.long).to(image_embeds.device)
         image2_atts = torch.ones(image2_embeds.size()[:-1], dtype=torch.long).to(image_embeds.device)
         
-        # if str(retrieval['ids'])[0] == "d":
-        #     image1_atts[i, :] = 0
 
         for i, ids in enumerate(retrieval['ids']):
             #print(ids)
             if str(ids)[0] == "d":
-                #print('img1')
+
                 image1_atts[i, :] = 0
             
             else:
-                #print('img2')
+
                 image2_atts[i, :] = 0
 
-            #print("image1_atts[i, :]: ", image1_atts[i, :])
-            #print("image2_atts[i, :]: ", image2_atts[i, :])
 
         image_atts = torch.cat([image1_atts, image2_atts], dim=-1)
 
 
         query_tokens = self.query_tokens.expand(image_embeds.shape[0], -1, -1)
-        ## input_data.text: image_caption(if have) + pos_text + question 
+
         if self.qformer_text_input:
             text_Qformer = self.tokenizer(
                 retrieval['instruction'],
@@ -641,7 +613,6 @@ class Blip2T5InstructEnhance(Blip2Base):
         inputs_t5 = self.t5_proj(query_output.last_hidden_state[:,:query_tokens.size(1),:])
         atts_t5 = torch.ones(inputs_t5.size()[:-1], dtype=torch.long).to(image_embeds.device)
 
-        ## input_data.text: image_caption(if have) + pos_text + question
         with self.maybe_autocast(dtype=torch.bfloat16):
             input_tokens = self.t5_tokenizer(
                 retrieval['prompt'],
@@ -706,9 +677,7 @@ class Blip2T5InstructEnhance(Blip2Base):
 
         image1_atts = torch.ones(image1_embeds.size()[:-1], dtype=torch.long).to(image_embeds.device)
         image2_atts = torch.ones(image2_embeds.size()[:-1], dtype=torch.long).to(image_embeds.device)
-        # for i, view_img_num in enumerate(input_data['valid_image_num']):
-        #     if view_img_num == 1:
-        #         image2_atts[i, :] = 0
+
 
         for i, view_img_num in enumerate(input_data['valid_image_num']):
             if view_img_num == 1:
@@ -752,7 +721,7 @@ class Blip2T5InstructEnhance(Blip2Base):
 
         inputs_t5 = self.t5_proj(query_output.last_hidden_state[:,:query_tokens.size(1),:])
         atts_t5 = torch.ones(inputs_t5.size()[:-1], dtype=torch.long).to(image_embeds.device)
-        # 同样的输入再用t5编码，输入到t5-encoder中
+
         input_tokens = self.t5_tokenizer(
             input_data['prompt'],
             padding="longest",

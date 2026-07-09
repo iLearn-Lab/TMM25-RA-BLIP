@@ -207,8 +207,6 @@ def train(model, optimizer, dataloader, scaler, epoch, cur_step, scheduler,write
 
 def train_and_eval(args,model, optimizer, trainset,device):
 
-    print('1231231')
-
     train_sampler = DistributedSampler(trainset)
 
     trainloader = dataloader.DataLoader(trainset, 
@@ -220,18 +218,6 @@ def train_and_eval(args,model, optimizer, trainset,device):
     scaler = GradScaler()
     epoches = args.num_epochs
     
-    #gpu_num = args.world_size
-
-    #gpu_num = torch.cuda.device_count() if torch.cuda.is_available() else 1
-    
-    
-    #if args.rank == 0:
-    #    print("gpu_num: ", gpu_num)
-
-    #total_steps = int(len(trainset) / (args.batch_size * gpu_num)) * epoches
-
-    #print("total_steps: ", total_steps)
-
     if args.rank == 0:    
         print("len(trainset) ", len(trainset))
 
@@ -257,11 +243,11 @@ def train_and_eval(args,model, optimizer, trainset,device):
 
         the_loss,cur_step = train(model, optimizer, trainloader, scaler, epoch,cur_step, scheduler, writer, device)
         
-        print("AVERGE_LOSS={:05.3f}".format(the_loss)) 
+        print("AVERAGE_LOSS={:05.3f}".format(the_loss)) 
 
         if args.rank == 0:
-            logging.info("AVERGE_LOSS={:05.3f}".format(the_loss))
-            writer.add_scalar("AVERGE_LOSS",the_loss,epoch)
+            logging.info("AVERAGE_LOSS={:05.3f}".format(the_loss))
+            writer.add_scalar("AVERAGE_LOSS",the_loss,epoch)
 
         if args.rank == 0:
             print("epoch={}".format(epoch)) 
